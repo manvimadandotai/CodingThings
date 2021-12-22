@@ -1,2 +1,4 @@
-# Leetcode-solutions
-This repository contains the solutions of Leetcode problems I am solving to prepare for data science/ machine learning interviews.. 
+# Competitive Programming
+This repository contains the solutions of  programming problems solved from different platforms.
+
+
