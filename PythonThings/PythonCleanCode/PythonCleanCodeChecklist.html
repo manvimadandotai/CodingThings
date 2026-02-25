@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clean Code — Python for Beginners</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;700&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1410;
+    --cream: #f5f0e8;
+    --rust: #c94a2a;
+    --sage: #3d6b5a;
+    --gold: #d4a017;
+    --warm-grey: #8a7f72;
+    --card-bg: #fdfaf4;
+    --border: #d9d0c0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Lora', serif;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ---- HEADER ---- */
+  header {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 3rem 2rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 300px; height: 300px;
+    border: 2px solid var(--rust);
+    border-radius: 50%;
+    opacity: 0.2;
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 40px;
+    width: 180px; height: 180px;
+    background: var(--rust);
+    border-radius: 50%;
+    opacity: 0.08;
+  }
+
+  .header-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 0.8rem;
+    display: block;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  h1 em {
+    color: var(--rust);
+    font-style: normal;
+  }
+
+  .subtitle {
+    margin-top: 1rem;
+    font-size: 1.05rem;
+    color: #b8b0a4;
+    max-width: 520px;
+  }
+
+  /* ---- NAV PILLS ---- */
+  .nav-strip {
+    background: var(--ink);
+    border-top: 1px solid #2d2820;
+    padding: 0 2rem 1.5rem;
+  }
+
+  .nav-pills {
+    max-width: 860px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .nav-pills a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    color: var(--warm-grey);
+    border: 1px solid #3a3530;
+    padding: 0.3rem 0.8rem;
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+
+  .nav-pills a:hover {
+    color: var(--cream);
+    border-color: var(--rust);
+  }
+
+  /* ---- MAIN LAYOUT ---- */
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  /* ---- SECTION ---- */
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    background: var(--rust);
+    color: white;
+    padding: 0.15rem 0.4rem;
+    border-radius: 2px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  .section-intro {
+    color: #5a5248;
+    margin-bottom: 1.4rem;
+    font-size: 0.97rem;
+  }
+
+  /* ---- CODE CARD ---- */
+  .code-card {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--card-bg);
+    overflow: hidden;
+    margin-bottom: 1.2rem;
+    transition: box-shadow 0.2s;
+  }
+
+  .code-card:hover {
+    box-shadow: 4px 4px 0 var(--border);
+  }
+
+  .card-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    border-radius: 2px;
+  }
+
+  .badge-bad  { background: #fde8e4; color: var(--rust); }
+  .badge-good { background: #e4f0eb; color: var(--sage); }
+
+  .card-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--warm-grey);
+  }
+
+  pre {
+    margin: 0;
+    padding: 1rem 1.2rem;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.65;
+    background: transparent;
+  }
+
+  .comment { color: #8a9a8a; font-style: italic; }
+  .kw      { color: #7a4fb5; font-weight: 700; }
+  .fn      { color: #1a6b9a; font-weight: 700; }
+  .str     { color: #2a7a3a; }
+  .num     { color: var(--rust); }
+  .bad-hl  { background: #fde8e4; padding: 1px 2px; border-radius: 2px; }
+  .good-hl { background: #e4f0eb; padding: 1px 2px; border-radius: 2px; }
+
+  /* ---- RULE BOX ---- */
+  .rule-box {
+    border-left: 3px solid var(--gold);
+    padding: 0.9rem 1.2rem;
+    background: #fdf8ec;
+    font-size: 0.92rem;
+    margin-bottom: 1.2rem;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .rule-box strong {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    display: block;
+    margin-bottom: 0.3rem;
+    color: var(--ink);
+  }
+
+  /* ---- DIVIDER ---- */
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ---- CHECKLIST ---- */
+  .checklist {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 0.6rem;
+  }
+
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    padding: 0.7rem 0.9rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+  }
+
+  .check-icon {
+    color: var(--sage);
+    font-weight: 700;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  /* ---- FOOTER ---- */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--warm-grey);
+    border-top: 1px solid var(--border);
+    letter-spacing: 0.08em;
+  }
+
+  @media (max-width: 600px) {
+    .code-card pre { font-size: 0.74rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <span class="label">Python · Absolute Beginners</span>
+    <h1>Write <em>Clean</em><br>Python Code</h1>
+    <p class="subtitle">A practical guide to writing code that is readable, maintainable, and professional — from your very first script.</p>
+  </div>
+</header>
+
+<nav class="nav-strip">
+  <div class="nav-pills">
+    <a href="#naming">01 Naming</a>
+    <a href="#functions">02 Functions</a>
+    <a href="#comments">03 Comments</a>
+    <a href="#spacing">04 Spacing</a>
+    <a href="#conditionals">05 Conditionals</a>
+    <a href="#lists">06 Lists</a>
+    <a href="#errors">07 Errors</a>
+    <a href="#checklist">✓ Checklist</a>
+  </div>
+</nav>
+
+<main>
+
+  <!-- 01 NAMING -->
+  <section id="naming">
+    <div class="section-title">
+      <span class="section-num">01</span>
+      Meaningful Names
+    </div>
+    <p class="section-intro">Names are the most important thing you write. A good name is a free comment — it explains itself without any extra words.</p>
+
+    <div class="rule-box">
+      <strong>The Rule</strong>
+      Use <code>snake_case</code> for variables and functions. Names should say <em>what</em> something is, not <em>what type</em> it is.
+    </div>
+
+    <div class="code-card">
+      <div class="card-head">
+        <span class="badge badge-bad">✗ Messy</span>
+        <span class="card-label">hard to understand at a glance</span>
+      </div>
+      <pre><span class="kw">def</span> <span class="fn">calc</span>(a, b, c):
+    <span class="kw">return</span> a + b * c   <span class="comment"># what are a, b, c?</span>
+
+x = <span class="num">10</span>             <span class="comment"># what is x?</span>
+myList1 = []      <span class="comment"># type in the name → avoid</span>
+boolFlag = <span class="kw">True</span>   <span class="comment"># redundant suffix</span></pre>
+    </div>
+
+    <div class="code-card">
+      <div class="card-head">
+        <span class="badge badge-good">✓ Clean</span>
+        <span class="card-label">reads like plain English</span>
+      </div>
+      <pre><span class="kw">def</span> <span class="fn">calculate_total_price</span>(price, quantity, tax_rate):
+    <span class="kw">return</span> price + quantity * tax_rate
+
+age = <span class="num">10</span>
+students = []
+is_logged_in = <span class="kw">True</span></pre>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- 02 FUNCTIONS -->
+  <section id="functions">
+    <div class="section-title">
+      <span class="section-num">02</span>
+      Small, Focused Functions
+    </div>
+    <p class="section-intro">Each function should do <em>one thing</em> and do it well. If you can't describe it in a sentence without "and", split it up.</p>
+
+    <div class="rule-box">
+      <strong>The Rule</strong>
+      Aim for functions under ~15 lines. If a function is doing input, processing, AND output — break it into three functions.
+    </div>
+
+    <div class="code-card">
+      <div class="card-head">
+        <span class="badge badge-bad">✗ Messy</span>
+        <span class="card-label">one function doing everything</span>
+      </div>
+      <pre><span class="kw">def</span> <span class="fn">do_everything</span>(name, score):
+    <span class="comment"># validate</span>
+    <span class="kw">if</span> score < <span class="num">0</span> <span class="kw">or</span> score > <span class="num">100</span>:
+        <span class="kw">print</span>(<span class="str">"Invalid score"</span>)
+        <span class="kw">return</span>
+    <span class="comment"># calculate grade</span>
+    <span class="kw">if</span> score >= <span class="num">90</span>: grade = <span class="str">"A"</span>
+    <span class="kw">elif</span> score >= <span class="num">70</span>: grade = <span class="str">"B"</span>
+    <span class="kw">else</span>: grade = <span class="str">"C"</span>
+    <span class="comment"># print result</span>
+    <span class="kw">print</span>(f<span class="str">"{name} scored {score} — Grade: {grade}"</span>)</pre>
+    </div>
+
+    <div class="code-card">
+      <div class="card-head">
+        <span class="badge badge-good">✓ Clean</span>
+        <span class="card-label">each function has one job</span>
+      </div>
+      <pre><span class="kw">def</span> <span class="fn">is_valid_score</span>(score):
+    <span class="kw">return</span> <span class="num">0</span> <= score <= <span class="num">100</span>
+
+<span class="kw">def</span> <span class="fn">get_letter_grade</span>(score):
+    <span class="kw">if</span> score >= <span class="num">90</span>: <span class="kw">return</span> <span class="str">"A"</span>
+    <span class="kw">if</span> score >= <span class="num">70</span>: <span class="kw">return</span> <span class="str">"B"</span>
+    <span class="kw">return</span> <span class="str">"C"</span>
+
+<span class="kw">def</span> <span class="fn">display_result</span>(name, score):
+    <span class="kw">if not</span> is_valid_score(score):
+        <span class="kw">print</span>(<span class="str">"Invalid score"</span>)
+        <span class="kw">return</span>
+    grade = get_letter_grade(score)
+    <span class="kw">print</span>(f<span class="str">"{name} scored {score} — Grade: {grade}"</span>)</pre>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- 03 COMMENTS -->
+  <section id="comments">
+    <div class="section-title">
+      <span class="section-num">03</span>
+      Comments That Add Value
+    </div>
+    <p class="section-intro">Comments should explain <em>why</em>, not <em>what</em>. If your code is clear, it explains itself. Comments are for the parts that can't.</p>
+
+    <div class="code-card">
+      <div class="card-head">
+        <span class="badge badge-bad">✗ Messy</span>
+        <span class="card-label">comments that repeat the code</span>
+      </div>
+      <pre><span class="comment"># add 1 to counter</span>
+counter += <span class="num">1</span>
+
+<span class="comment"># loop through users</span>
+<span class="kw">for</span> user <span class="kw">in</span> users:
+    <span class="comment"># print user name</span>
+    <span class="kw">print</span>(user.name)</pre>
+    </div>
+
+    <div class="code-card">
+      <div class="card-head">
+        <span class="badge badge-good">✓ Clean</span>
+        <span class="card-label">comments that explain the "why"</span>
+      </div>
+      <pre>counter += <span class="num">1</span>  <span class="comment"># track retries before timeout</span>
+
+<span class="comment"># API returns users sorted by signup date (oldest first),</span>
+<span class="comment"># but we display newest first — reverse before rendering</span>
+<span class="kw">for</span> user <span class="kw">in</span> reversed(users):
+    <span class="kw">print</span>(user.name)</pre>
+    </div>
+
+    <div class="rule-box">
+      <strong>Docstrings for Functions</strong>
+      Add a short docstring to any function that isn't immediately obvious. Use triple quotes.
+      <br><br>
+      <code><span class="kw">def</span> <span class="fn">calculate_discount</span>(price, percent):<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"""Return discounted price. Percent should be 0–100."""</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> price * (<span class="num">1</span> - percent / <span class="num">100</span>)</code>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- 04 SPACING -->
+  <section id="spacing">
+    <div class="section-title">
+      <span class="section-num">04</span>
+      Spacing &amp; Formatting (PEP 8)
+    </div>
+    <p class="section-intro">Python has an official style guide called PEP 8. You don't need to memorise it — just know the core rules.</p>
+
+    <div class="code-card">
+      <div class="card-head">
+        <span class="badge badge-bad">✗ Messy</span>
+        <span class="card-label">inconsistent whitespace</span>
+      </div>
+      <pre>x=<span class="num">5</span>+<span class="num">3</span>
+<span class="kw">def</span> <span class="fn">greet</span>( name,greeting=<span class="str">"Hello"</span> ):
+    <span class="kw">print</span>(greeting+<span class="str">","</span>+name)
+greet(<span class="str">"Alice"</span>,<span class="str">"Hi"</span>)</pre>
+    </div>
+
+    <div class="code-card">
+      <div class="card-head">
+        <span class="badge badge-good">✓ Clean</span>
+        <span class="card-label">PEP 8 spacing</span>
+      </div>
+      <pre>x = <span class="num">5</span> + <span class="num">3</span>
+
+<span class="kw">def</span> <span class="fn">greet</span>(name, greeting=<span class="str">"Hello"</span>):
+    <span class="kw">print</span>(greeting + <span class="str">", "</span> + name)
+
+greet(<span class="str">"Alice"</span>, <span class="str">"Hi"</span>)</pre>
+    </div>
+
+    <div class="rule-box">
+      <strong>Quick Spacing Rules</strong>
+      Spaces around operators: <code>x = 5</code> not <code>x=5</code>. No spaces inside parentheses. Two blank lines between top-level functions. Use 4 spaces (not tabs) for indentation.
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- 05 CONDITIONALS -->
+  <section id="conditionals">
+    <div class="section-title">
+      <span class="section-num">05</span>
+      Cleaner Conditionals
+    </div>
+    <p class="section-intro">Long chains of if/else are hard to read. Python has elegant shortcuts worth knowing early.</p>
+
+    <div class="code-card">
+      <div class="card-head">
+        <span class="badge badge-bad">✗ Messy</span>
+        <span class="card-label">verbose comparisons</span>
+      </div>
+      <pre><span class="kw">if</span> name == <span class="str">"Alice"</span> <span class="kw">or</span> name == <span class="str">"Bob"</span> <span class="kw">or</span> name == <span class="str">"Carol"</span>:
+    <span class="kw">print</span>(<span class="str">"Admin"</span>)
+
+<span class="kw">if</span> is_active == <span class="kw">True</span>:
+    send_email()
+
+result = <span class="kw">None</span>
+<span class="kw">if</span> score >= <span class="num">50</span>:
+    result = <span class="str">"pass"</span>
+<span class="kw">else</span>:
+    result = <span class="str">"fail"</span></pre>
+    </div>
+
+    <div class="code-card">
+      <div class="card-head">
+        <span class="badge badge-good">✓ Clean</span>
+        <span class="card-label">pythonic conditionals</span>
+      </div>
+      <pre>admins = {<span class="str">"Alice"</span>, <span class="str">"Bob"</span>, <span class="str">"Carol"</span>}
+<span class="kw">if</span> name <span class="kw">in</span> admins:
+    <span class="kw">print</span>(<span class="str">"Admin"</span>)
+
+<span class="kw">if</span> is_active:          <span class="comment"># don't compare to True</span>
+    send_email()
+
+result = <span class="str">"pass"</span> <span class="kw">if</span> score >= <span class="num">50</span> <span class="kw">else</span> <span class="str">"fail"</span></pre>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- 06 LISTS -->
+  <section id="lists">
+    <div class="section-title">
+      <span class="section-num">06</span>
+      List Comprehensions
+    </div>
+    <p class="section-intro">One of Python's best features. Turn multi-line loops into single readable expressions — but only when it stays clear.</p>
+
+    <div class="code-card">
+      <div class="card-head">
+        <span class="badge badge-bad">✗ Verbose</span>
+        <span class="card-label">loop-based list building</span>
+      </div>
+      <pre>even_squares = []
+<span class="kw">for</span> n <span class="kw">in</span> range(<span class="num">10</span>):
+    <span class="kw">if</span> n % <span class="num">2</span> == <span class="num">0</span>:
+        even_squares.append(n ** <span class="num">2</span>)</pre>
+    </div>
+
+    <div class="code-card">
+      <div class="card-head">
+        <span class="badge badge-good">✓ Pythonic</span>
+        <span class="card-label">list comprehension</span>
+      </div>
+      <pre>even_squares = [n ** <span class="num">2</span> <span class="kw">for</span> n <span class="kw">in</span> range(<span class="num">10</span>) <span class="kw">if</span> n % <span class="num">2</span> == <span class="num">0</span>]</pre>
+    </div>
+
+    <div class="rule-box">
+      <strong>When Not to Use Them</strong>
+      If the comprehension spans more than one line or has nested logic, use a plain loop. Readability wins.
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- 07 ERRORS -->
+  <section id="errors">
+    <div class="section-title">
+      <span class="section-num">07</span>
+      Handling Errors Properly
+    </div>
+    <p class="section-intro">Catching errors is good. Catching <em>all</em> errors silently is dangerous — it hides bugs and makes debugging a nightmare.</p>
+
+    <div class="code-card">
+      <div class="card-head">
+        <span class="badge badge-bad">✗ Messy</span>
+        <span class="card-label">silent blanket catch</span>
+      </div>
+      <pre><span class="kw">try</span>:
+    result = <span class="num">10</span> / user_input
+<span class="kw">except</span>:          <span class="comment"># catches EVERYTHING, even typos</span>
+    <span class="kw">pass</span>         <span class="comment"># error disappears silently</span></pre>
+    </div>
+
+    <div class="code-card">
+      <div class="card-head">
+        <span class="badge badge-good">✓ Clean</span>
+        <span class="card-label">specific, informative error handling</span>
+      </div>
+      <pre><span class="kw">try</span>:
+    result = <span class="num">10</span> / user_input
+<span class="kw">except</span> ZeroDivisionError:
+    <span class="kw">print</span>(<span class="str">"Error: cannot divide by zero."</span>)
+    result = <span class="kw">None</span>
+<span class="kw">except</span> TypeError <span class="kw">as</span> e:
+    <span class="kw">print</span>(f<span class="str">"Unexpected input type: {e}"</span>)
+    result = <span class="kw">None</span></pre>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- CHECKLIST -->
+  <section id="checklist">
+    <div class="section-title">
+      <span class="section-num">✓</span>
+      Clean Code Checklist
+    </div>
+    <p class="section-intro">Before you consider any script "done", run through this list.</p>
+    <ul class="checklist">
+      <li><span class="check-icon">✓</span> Variable names describe what they hold</li>
+      <li><span class="check-icon">✓</span> Functions do one thing each</li>
+      <li><span class="check-icon">✓</span> No function longer than ~20 lines</li>
+      <li><span class="check-icon">✓</span> Comments explain <em>why</em>, not <em>what</em></li>
+      <li><span class="check-icon">✓</span> 4-space indentation, consistent throughout</li>
+      <li><span class="check-icon">✓</span> Spaces around all operators</li>
+      <li><span class="check-icon">✓</span> No magic numbers — use named constants</li>
+      <li><span class="check-icon">✓</span> Errors caught specifically, not silently</li>
+      <li><span class="check-icon">✓</span> No copy-pasted code blocks (extract a function)</li>
+      <li><span class="check-icon">✓</span> You can read it aloud and it makes sense</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>CLEAN CODE GUIDE · PYTHON FOR BEGINNERS · KEEP IT SIMPLE</footer>
+
+</body>
+</html>
